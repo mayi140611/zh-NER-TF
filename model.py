@@ -10,21 +10,33 @@ from eval import conlleval
 
 
 class BiLSTM_CRF(object):
-    def __init__(self, args, embeddings, tag2label, vocab, paths, config):
-        self.batch_size = args.batch_size
-        self.epoch_num = args.epoch
-        self.hidden_dim = args.hidden_dim
+#     def __init__(self, args, embeddings, tag2label, vocab, paths, config):
+    def __init__(self, embeddings, tag2label, vocab, paths, config):
+        tf.reset_default_graph() 
+#         self.batch_size = args.batch_size
+#         self.epoch_num = args.epoch
+#         self.hidden_dim = args.hidden_dim
+        self.batch_size = 64
+        self.epoch_num = 40
+        self.hidden_dim = 300
         self.embeddings = embeddings
-        self.CRF = args.CRF
-        self.update_embedding = args.update_embedding
-        self.dropout_keep_prob = args.dropout
-        self.optimizer = args.optimizer
-        self.lr = args.lr
-        self.clip_grad = args.clip
+#         self.CRF = args.CRF
+#         self.update_embedding = args.update_embedding
+#         self.dropout_keep_prob = args.dropout
+#         self.optimizer = args.optimizer
+#         self.lr = args.lr
+#         self.clip_grad = args.clip
+        self.CRF = True
+        self.update_embedding = True
+        self.dropout_keep_prob = 0.5
+        self.optimizer = 'Adam'
+        self.lr = 0.001
+        self.clip_grad = 5.0
         self.tag2label = tag2label
         self.num_tags = len(tag2label)
         self.vocab = vocab
-        self.shuffle = args.shuffle
+#         self.shuffle = args.shuffle
+        self.shuffle = True
         self.model_path = paths['model_path']
         self.summary_path = paths['summary_path']
         self.logger = get_logger(paths['log_path'])
@@ -45,7 +57,7 @@ class BiLSTM_CRF(object):
         self.labels = tf.placeholder(tf.int32, shape=[None, None], name="labels")
         self.sequence_lengths = tf.placeholder(tf.int32, shape=[None], name="sequence_lengths")
 
-        self.dropout_pl = tf.placeholder(dtype=tf.float32, shape=[], name="dropout")
+        self.dropout_pl = tf.placeholder(dtype=tf.float32, shape=[], name="dropout")#[]没有形状，表示只是一个数字
         self.lr_pl = tf.placeholder(dtype=tf.float32, shape=[], name="lr")
 
     def lookup_layer_op(self):

@@ -51,13 +51,14 @@ def vocab_build(vocab_path, corpus_path, min_count):
                 word2id[word] = [len(word2id)+1, 1]
             else:
                 word2id[word][1] += 1
+    #删除低频字
     low_freq_words = []
     for word, [word_id, word_freq] in word2id.items():
         if word_freq < min_count and word != '<NUM>' and word != '<ENG>':
             low_freq_words.append(word)
     for word in low_freq_words:
         del word2id[word]
-
+    #为每个字编码
     new_id = 1
     for word in word2id.keys():
         word2id[word] = new_id
@@ -81,6 +82,7 @@ def sentence2id(sent, word2id):
     for word in sent:
         if word.isdigit():
             word = '<NUM>'
+        #判断word是不是english，注意这里只比较word的首字母是否在A-Z 或 a-z
         elif ('\u0041' <= word <= '\u005a') or ('\u0061' <= word <= '\u007a'):
             word = '<ENG>'
         if word not in word2id:
